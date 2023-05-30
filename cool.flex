@@ -63,8 +63,13 @@ DARROW  =>
   */
 
 {DIGIT}+ {
-  printf( "An integer: %s (%d)\n", yytext,
-  atoi( yytext ) );
+  cool_yylval.symbol = idtable.add_string(yytext);
+  return (INT_CONST);
+}
+
+{ID} {
+  cool_yylval.symbol = idtable.add_string(yytext);
+  return (ID);
 }
 
 ".*\\[^btfn]+" 
@@ -73,32 +78,52 @@ DARROW  =>
   printf( "A string: %s\n", yytext );
 }
 
-{ID} {}
+
 
 
  /*
   *  The multiple-character operators.
   */
+
 {DARROW}		{ return (DARROW); }
-class
-else
-false
-fi
-if
-in
-inherits
-isvoid
-let
-loop
-pool
-then
-while
-case
-esac
-new
-of
-not
-true
+
+/*single-character tokens */
+"{"             { return LBRACE; }
+"}"             { return RBRACE; }
+"("             { return LPAREN; }
+")"             { return RPAREN; }
+";"             { return SEMICOLON; }
+":"             { return COLON; }
+","             { return COMMA; }
+"+"             { return PLUS; }
+"-"             { return MINUS; }
+"*"             { return MULT; }
+"/"             { return DIV; }
+"="             { return EQUALS; }
+"<"             { return LESS_THAN; }
+"@"             { return AT; }
+
+/*  The following are reserved words  */
+"class"       { return (CLASS); }
+"else" 			  { return (ELSE); }
+"false"       { return (FALSE); }
+"fi"          { return (FI); }
+"if"          { return (IF); }
+"in"          { return (IN); }
+"inherits"    { return (INHERITS); } 
+"isvoid"      { return (ISVOID); } 
+"let"         { return (LET); }
+"loop"        { return (LOOP); }
+"pool"        { return (POOL); }
+"then"        { return (THEN); }
+"while"       { return (WHILE); }
+"case"        { return (CASE); }
+"esac"        { return (ESAC); }
+"new"         { return (NEW); }
+"of"          { return (OF); }
+"not"         { return (NOT); }
+
+[ \t\r\n\f\v]+  ;  /*skip whitespace*/
 
  /*
   * Keywords are case-insensitive except for the values true and false,
