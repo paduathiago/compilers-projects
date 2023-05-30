@@ -7,6 +7,7 @@
  *  output, so headers and global definitions are placed here to be visible
  * to the code in the file.  Don't remove anything that was here initially
  */
+
 %{
 #include <cool-parse.h>
 #include <stringtab.h>
@@ -51,10 +52,9 @@ extern YYSTYPE cool_yylval;
 
 %}
 
-DIGIT	[0-9]
-STRING	"[^\b\t\f\n]+"
-
-DARROW          =>
+DIGIT   [0-9]
+ID      [a-zA-Z][a-zA-Z0-9_]*
+DARROW  =>
 
 %%
 
@@ -62,9 +62,18 @@ DARROW          =>
   *  Nested comments
   */
 
+{DIGIT}+ {
+  printf( "An integer: %s (%d)\n", yytext,
+  atoi( yytext ) );
+}
 
+".*\\[^btfn]+" 
 
+"[^\b\t\f\n]+" {
+  printf( "A string: %s\n", yytext );
+}
 
+{ID} {}
 
 
  /*
