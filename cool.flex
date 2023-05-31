@@ -52,21 +52,24 @@ extern YYSTYPE cool_yylval;
 
 %}
 
+DARROW     =>
+ASSIGN     <-
+LE         <=   
+
 DIGIT      [0-9]
 OBJID      [a-z][a-zA-Z0-9_]*
 TYPEID     [A-Z][a-zA-Z0-9_]*
-DARROW  =>
 
 %%
 
 [ \t\r\n\f\v]+  ;  /*skip whitespace*/
 
- /*
-  *  Nested comments
-  */
+{DARROW}		{ return (DARROW); }
+{ASSIGN}		{ return (ASSIGN); }
+{LE}		    { return (LE); }
 
 {DIGIT}+ {
-  cool_yylval.symbol = atoi(yytext);
+   cool_yylval.symbol = idtable.add_string(yytext);
   return (INT_CONST);
 }
 
@@ -95,7 +98,6 @@ DARROW  =>
   *  The multiple-character operators.
   */
 
-{DARROW}		{ return (DARROW); }
 
 /*single-character tokens */
 "{"             { return LBRACE; }
@@ -119,36 +121,46 @@ DARROW  =>
 */
 
 "t[rR][uU][eE]" {
-  cool_yylval.boolean = 1;
+  cool_yylval.boolean = true;
   return (BOOL_CONST);
 }
 "f[aA][lL][sS][eE]" {
-  cool_yylval.boolean = 0;
+  cool_yylval.boolean = false;
   return (BOOL_CONST);
 }
-"class"       { return (CLASS); }
-"else" 			  { return (ELSE); }
-"fi"          { return (FI); }
-"if"          { return (IF); }
-"in"          { return (IN); }
-"inherits"    { return (INHERITS); } 
-"isvoid"      { return (ISVOID); } 
-"let"         { return (LET); }
-"loop"        { return (LOOP); }
-"pool"        { return (POOL); }
-"then"        { return (THEN); }
-"while"       { return (WHILE); }
-"case"        { return (CASE); }
-"esac"        { return (ESAC); }
-"new"         { return (NEW); }
-"of"          { return (OF); }
-"not"         { return (NOT); }
+[cC][lL][aA][sS][sS]	            { return (CLASS); }
+[eE][lL][sS][eE] 			            { return (ELSE); }
+[fF][iI]                          { return (FI); }
+[iI][fF]                          { return (IF); }
+[Ii][Nn]                          { return (IN); }
+[iI][nN][hH][eE][rR][iI][tT][sS]  { return (INHERITS); } 
+[iI][sS][vV][oO][iI][dD]	        { return (ISVOID); } 
+[lL][eE][tT]                      { return (LET); }
+[lL][oO][oO][pP]	                { return (LOOP); }
+[pP][oO][oO][lL]	                { return (POOL); }
+[tT][hH][eE][nN]	                { return {THEN}; }
+[wW][hH][iI][lL][eE]	            { return (WHILE); }
+[cC][aA][sS][eE]	                { return (CASE); }
+[eE][sS][aA][cC]	                { return (ESAC); }
+[nN][eE][wW]	                    { return (NEW); }
+[oO][fF]	                        { return (OF); }
+[nN][oO][tT]	                    { return (NOT); }
 
 /* Comments begin with -- and extend to the end of the line */
 "--".*          ;
 
 /*Comments can also be enclosed in (* and *) */
 "(*"            {
+
+  int input()
+  {
+    int c = getc(fin);
+    if (c == '\n') {
+      curr_lineno++;
+    }
+    return c;
+  }
+
   int comment_depth = 1;
   while (comment_depth > 0) {
     int c = input();
@@ -178,6 +190,5 @@ DARROW  =>
       }
     }
   }
-
 
 %%
