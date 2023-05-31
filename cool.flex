@@ -66,7 +66,7 @@ DARROW  =>
   */
 
 {DIGIT}+ {
-  cool_yylval.symbol = idtable.add_string(yytext);
+  cool_yylval.symbol = atoi(yytext);
   return (INT_CONST);
 }
 
