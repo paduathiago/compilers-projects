@@ -148,6 +148,36 @@ DARROW  =>
 "--".*          ;
 
 /*Comments can also be enclosed in (* and *) */
+"(*"            {
+  int comment_depth = 1;
+  while (comment_depth > 0) {
+    int c = input();
+    if (c == EOF) {
+      cool_yylval.error_msg = "EOF in comment";
+      return (ERROR);
+    }
+    if (c == '(') {
+      c = input();
+      if (c == EOF) {
+        cool_yylval.error_msg = "EOF in comment";
+        return (ERROR);
+      }
+      if (c == '*') {
+        comment_depth++;
+      }
+    }
+    if (c == '*') {
+      c = input();
+      if (c == EOF) {
+        cool_yylval.error_msg = "EOF in comment";
+        return (ERROR);
+      }
+    }
+      if (c == ')') {
+        comment_depth--;
+      }
+    }
+  }
 
 
 %%
