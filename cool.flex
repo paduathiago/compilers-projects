@@ -52,11 +52,14 @@ extern YYSTYPE cool_yylval;
 
 %}
 
-DIGIT   [0-9]
-ID      [a-zA-Z][a-zA-Z0-9_]*
+DIGIT      [0-9]
+OBJID      [a-z][a-zA-Z0-9_]*
+TYPEID     [A-Z][a-zA-Z0-9_]*
 DARROW  =>
 
 %%
+
+[ \t\r\n\f\v]+  ;  /*skip whitespace*/
 
  /*
   *  Nested comments
@@ -67,19 +70,26 @@ DARROW  =>
   return (INT_CONST);
 }
 
-{ID} {
+{TYPEID} {
   cool_yylval.symbol = idtable.add_string(yytext);
-  return (ID);
+  return (TYPEID);
 }
 
-".*\\[^btfn]+" 
-
-"[^\b\t\f\n]+" {
-  printf( "A string: %s\n", yytext );
+{OBJID} {
+  cool_yylval.symbol = idtable.add_string(yytext);
+  return (OBJECTID);
 }
 
+ /*
+  *  String constants (C syntax)
+  *  Escape sequence \c is accepted for all characters c. Except for 
+  *  \n \t \b \f, the result is c. 
+  */
 
-
+"\"[^\b\f\n\r\t\v]*\"" {
+  cool_yylval.symbol = idtable.add_string(yytext);
+  return (STR_CONST);
+}
 
  /*
   *  The multiple-character operators.
@@ -103,10 +113,21 @@ DARROW  =>
 "<"             { return LESS_THAN; }
 "@"             { return AT; }
 
-/*  The following are reserved words  */
+/*  The following are reserved words
+  * Keywords are case-insensitive except for the values true and false,
+  * which must begin with a lower-case letter.
+*/
+
+"t[rR][uU][eE]" {
+  cool_yylval.boolean = 1;
+  return (BOOL_CONST);
+}
+"f[aA][lL][sS][eE]" {
+  cool_yylval.boolean = 0;
+  return (BOOL_CONST);
+}
 "class"       { return (CLASS); }
 "else" 			  { return (ELSE); }
-"false"       { return (FALSE); }
 "fi"          { return (FI); }
 "if"          { return (IF); }
 "in"          { return (IN); }
@@ -123,20 +144,10 @@ DARROW  =>
 "of"          { return (OF); }
 "not"         { return (NOT); }
 
-[ \t\r\n\f\v]+  ;  /*skip whitespace*/
+/* Comments begin with -- and extend to the end of the line */
+"--".*          ;
 
- /*
-  * Keywords are case-insensitive except for the values true and false,
-  * which must begin with a lower-case letter.
-  */
-
-
- /*
-  *  String constants (C syntax)
-  *  Escape sequence \c is accepted for all characters c. Except for 
-  *  \n \t \b \f, the result is c.
-  *
-  */
+/*Comments can also be enclosed in (* and *) */
 
 
 %%
