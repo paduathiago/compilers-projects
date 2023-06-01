@@ -49,8 +49,13 @@ extern YYSTYPE cool_yylval;
 /*
  *  Add Your own definitions here
  */
+%x STR
 
 %}
+
+void read_char();
+
+SINGLE_TOKENS [{}():;@,+-*/=<>]
 
 DARROW     =>
 ASSIGN     <-
@@ -100,20 +105,7 @@ TYPEID     [A-Z][a-zA-Z0-9_]*
 
 
 /*single-character tokens */
-"{"             { return LBRACE; }
-"}"             { return RBRACE; }
-"("             { return LPAREN; }
-")"             { return RPAREN; }
-";"             { return SEMICOLON; }
-":"             { return COLON; }
-","             { return COMMA; }
-"+"             { return PLUS; }
-"-"             { return MINUS; }
-"*"             { return MULT; }
-"/"             { return DIV; }
-"="             { return EQUALS; }
-"<"             { return LESS_THAN; }
-"@"             { return AT; }
+{SINGLE_TOKENS} { return (yytext[0]); }
 
 /*  The following are reserved words
   * Keywords are case-insensitive except for the values true and false,
@@ -146,49 +138,39 @@ TYPEID     [A-Z][a-zA-Z0-9_]*
 [oO][fF]	                        { return (OF); }
 [nN][oO][tT]	                    { return (NOT); }
 
+
+/* STRINGS */
+\"{
+  string_buf_ptr = string_buf;
+  BEGIN(STR);
+}
+
+<STR> {
+  \\n {
+    curr_lineno++;
+    read_char('\n');
+  }
+
+  \"  {
+    *string_buf_ptr = '\0';
+    cool_yylval.symbol = idtable.add_string(string_buf);
+    BEGIN(INITIAL);
+    return (STR_CONST);
+  }
+   
+}
+
+
 /* Comments begin with -- and extend to the end of the line */
 "--".*          ;
 
 /*Comments can also be enclosed in (* and *) */
 "(*"            {
 
-  int input()
-  {
-    int c = getc(fin);
-    if (c == '\n') {
-      curr_lineno++;
-    }
-    return c;
-  }
-
-  int comment_depth = 1;
-  while (comment_depth > 0) {
-    int c = input();
-    if (c == EOF) {
-      cool_yylval.error_msg = "EOF in comment";
-      return (ERROR);
-    }
-    if (c == '(') {
-      c = input();
-      if (c == EOF) {
-        cool_yylval.error_msg = "EOF in comment";
-        return (ERROR);
-      }
-      if (c == '*') {
-        comment_depth++;
-      }
-    }
-    if (c == '*') {
-      c = input();
-      if (c == EOF) {
-        cool_yylval.error_msg = "EOF in comment";
-        return (ERROR);
-      }
-    }
-      if (c == ')') {
-        comment_depth--;
-      }
-    }
-  }
+}
 
 %%
+void read_char(char ch)
+{
+  *string_buf_ptr++ = ch;
+}
