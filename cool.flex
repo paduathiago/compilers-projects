@@ -49,7 +49,7 @@ extern YYSTYPE cool_yylval;
 /*
  *  Add Your own definitions here
  */
-%x STR
+%x STR, COMMENT
 
 %}
 
@@ -132,12 +132,23 @@ TYPEID     [A-Z][a-zA-Z0-9_]*
 
 <STR> {
   
-  \\(.|\n){
-    read_char(yytext[1]);
+  \" {
+    *string_buf_ptr = '\0';
+    cool_yylval.symbol = idtable.add_string(string_buf);
+    BEGIN(INITIAL);
+    return (STR_CONST);
   }
-  
+
+
+  <<EOF>> {
+    /*ERROR*/
+  }
 
   \0 {
+    /*ERROR*/
+  }
+
+  \n {
     /*ERROR*/
   }
 
@@ -147,30 +158,26 @@ TYPEID     [A-Z][a-zA-Z0-9_]*
   *  \n \t \b \f, the result is c. 
   */
 
-  \n {
-    /*ERROR*/
-  }
-
   \\n {
     curr_lineno++;
     read_char('\n');
   }
-  \\t {read_char('\n');}
+  \\t {read_char('\t');}
   \\r {read_char('\r');}
   \\b {read_char('\b');}
   \\f {read_char('\f');}
 
-  [^\\\n\"]+ {
-    read_char(yytext[0]);
+  \\(.|\n){
+    read_char(yytext[1]);
   }
 
-  \"  {
-    *string_buf_ptr = '\0';
-    cool_yylval.symbol = idtable.add_string(string_buf);
-    BEGIN(INITIAL);
-    return (STR_CONST);
-  }
-   
+  [^\\\n\"]+ {  /* Reads all other characters */
+    char *yptr = yytext;
+    while (*yptr){
+      read_char(*yptr);
+      yptr++;
+    }
+  }   
 }
 
 
@@ -178,8 +185,16 @@ TYPEID     [A-Z][a-zA-Z0-9_]*
 "--".*          ;
 
 /*Comments can also be enclosed in (* and *) */
-"(*"            {
+"(*" { BEGIN(COMMENT); }
 
+<COMMENT>{
+  /* Patterns not followed by actions do nothing */
+  
+  [^*\n]*
+  [^*\n]*\n ++line_num;
+  "*"+[^*/\n]* 
+  "*"+[^*/\n]*\n ++line_num;
+  "*"+")" BEGIN(INITIAL);
 }
 
 %%
