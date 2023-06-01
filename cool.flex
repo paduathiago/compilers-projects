@@ -57,6 +57,7 @@ void read_char();
 
 SINGLE_TOKENS [{}():;@,+-*/=<>]
 
+/* The multiple-character operators. */
 DARROW     =>
 ASSIGN     <-
 LE         <=   
@@ -74,7 +75,7 @@ TYPEID     [A-Z][a-zA-Z0-9_]*
 {LE}		    { return (LE); }
 
 {DIGIT}+ {
-   cool_yylval.symbol = idtable.add_string(yytext);
+  cool_yylval.symbol = idtable.add_string(yytext);
   return (INT_CONST);
 }
 
@@ -87,22 +88,6 @@ TYPEID     [A-Z][a-zA-Z0-9_]*
   cool_yylval.symbol = idtable.add_string(yytext);
   return (OBJECTID);
 }
-
- /*
-  *  String constants (C syntax)
-  *  Escape sequence \c is accepted for all characters c. Except for 
-  *  \n \t \b \f, the result is c. 
-  */
-
-"\"[^\b\f\n\r\t\v]*\"" {
-  cool_yylval.symbol = idtable.add_string(yytext);
-  return (STR_CONST);
-}
-
- /*
-  *  The multiple-character operators.
-  */
-
 
 /*single-character tokens */
 {SINGLE_TOKENS} { return (yytext[0]); }
@@ -146,9 +131,37 @@ TYPEID     [A-Z][a-zA-Z0-9_]*
 }
 
 <STR> {
+  
+  \\(.|\n){
+    read_char(yytext[1]);
+  }
+  
+
+  \0 {
+    /*ERROR*/
+  }
+
+  /*
+  *  String constants (C syntax)
+  *  Escape sequence \c is accepted for all characters c. Except for 
+  *  \n \t \b \f, the result is c. 
+  */
+
+  \n {
+    /*ERROR*/
+  }
+
   \\n {
     curr_lineno++;
     read_char('\n');
+  }
+  \\t {read_char('\n');}
+  \\r {read_char('\r');}
+  \\b {read_char('\b');}
+  \\f {read_char('\f');}
+
+  [^\\\n\"]+ {
+    read_char(yytext[0]);
   }
 
   \"  {
@@ -172,5 +185,8 @@ TYPEID     [A-Z][a-zA-Z0-9_]*
 %%
 void read_char(char ch)
 {
+  if (string_buf_ptr - string_buf >= MAX_STR_CONST) {
+    /*ERROR*/
+  }
   *string_buf_ptr++ = ch;
 }
