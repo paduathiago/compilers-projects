@@ -152,7 +152,9 @@ TYPEID     [A-Z][a-zA-Z0-9_]*
   }
 
   \n {
-    /*ERROR*/
+    cool_yylval.error_msg = "Unterminated string constant";
+    BEGIN(INITIAL);
+    return (ERROR);
   }
 
   /*
@@ -183,9 +185,8 @@ TYPEID     [A-Z][a-zA-Z0-9_]*
   }   
 }
 
-
 /* Comments begin with -- and extend to the end of the line */
-"--".*          { /* skip comment */ }
+"--".*          /* skip comment */
 
 *) {
   /*ERROR*/
@@ -218,7 +219,9 @@ TYPEID     [A-Z][a-zA-Z0-9_]*
 void read_char(char ch)
 {
   if (string_buf_ptr - string_buf >= MAX_STR_CONST) {
-    /*ERROR*/
+    cool_yylval.error_msg = "String constant too long";
+    BEGIN(INITIAL);
+    return (ERROR);
   }
   *string_buf_ptr++ = ch;
 }
