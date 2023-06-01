@@ -49,7 +49,7 @@ extern YYSTYPE cool_yylval;
 /*
  *  Add Your own definitions here
  */
-%x STR COMMENT
+%x STR COMMENT TREAT_STR_ERROR
 
 %}
 
@@ -144,7 +144,9 @@ TYPEID     [A-Z][a-zA-Z0-9_]*
   }
 
   <<EOF>> {
-    /*ERROR*/
+    cool_yylval.error_msg = "EOF in string constant";
+    BEGIN(INITIAL);
+    return (ERROR);
   }
 
   \0 {
@@ -153,6 +155,7 @@ TYPEID     [A-Z][a-zA-Z0-9_]*
 
   \n {
     cool_yylval.error_msg = "Unterminated string constant";
+    curr_lineno++;
     BEGIN(INITIAL);
     return (ERROR);
   }
@@ -182,14 +185,15 @@ TYPEID     [A-Z][a-zA-Z0-9_]*
       read_char(*yptr);
       yptr++;
     }
-  }   
+  }  
 }
 
 /* Comments begin with -- and extend to the end of the line */
 "--".*          /* skip comment */
 
 *) {
-  /*ERROR*/
+  cool_yylval.error_msg = "Unmatched *)";
+  return (ERROR);
 }
 
 /*Comments can also be enclosed in (* and *) */
@@ -215,12 +219,30 @@ TYPEID     [A-Z][a-zA-Z0-9_]*
   }
 }
 
+<TREAT_STR_ERROR> {
+  \n {
+    curr_lineno++;
+    BEGIN(INITIAL);
+  }
+
+  \\\"
+
+  \" { BEGIN(INITIAL); }
+  
+  .+ 
+}
+
+. {
+  cool_yylval.error_msg = "Illegal character: %s", yytext;
+  return (ERROR);
+}
+
 %%
 void read_char(char ch)
 {
   if (string_buf_ptr - string_buf >= MAX_STR_CONST) {
     cool_yylval.error_msg = "String constant too long";
-    BEGIN(INITIAL);
+    BEGIN(TREAT_STR_ERROR);
     return (ERROR);
   }
   *string_buf_ptr++ = ch;
