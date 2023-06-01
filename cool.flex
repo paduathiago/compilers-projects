@@ -53,6 +53,8 @@ extern YYSTYPE cool_yylval;
 
 %}
 
+int line_num = 0;
+
 void read_char();
 
 SINGLE_TOKENS [{}():;@,+-*/=<>]
@@ -139,7 +141,6 @@ TYPEID     [A-Z][a-zA-Z0-9_]*
     return (STR_CONST);
   }
 
-
   <<EOF>> {
     /*ERROR*/
   }
@@ -184,6 +185,10 @@ TYPEID     [A-Z][a-zA-Z0-9_]*
 /* Comments begin with -- and extend to the end of the line */
 "--".*          ;
 
+*)
+  /*ERROR*/
+}
+
 /*Comments can also be enclosed in (* and *) */
 "(*" { BEGIN(COMMENT); }
 
@@ -194,6 +199,9 @@ TYPEID     [A-Z][a-zA-Z0-9_]*
   [^*\n]*\n ++line_num;
   "*"+[^*/\n]* 
   "*"+[^*/\n]*\n ++line_num;
+  <<EOF>> {
+    /*ERROR*/
+  }
   "*"+")" BEGIN(INITIAL);
 }
 
