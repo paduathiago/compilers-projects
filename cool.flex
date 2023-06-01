@@ -49,11 +49,11 @@ extern YYSTYPE cool_yylval;
 /*
  *  Add Your own definitions here
  */
-%x STR, COMMENT
+%x STR COMMENT
 
 %}
 
-int line_num = 0;
+int nested_comments = 0;
 
 void read_char();
 
@@ -71,6 +71,8 @@ TYPEID     [A-Z][a-zA-Z0-9_]*
 %%
 
 [ \t\r\n\f\v]+  ;  /*skip whitespace*/
+
+\n          { curr_lineno++; }
 
 {DARROW}		{ return (DARROW); }
 {ASSIGN}		{ return (ASSIGN); }
@@ -183,26 +185,33 @@ TYPEID     [A-Z][a-zA-Z0-9_]*
 
 
 /* Comments begin with -- and extend to the end of the line */
-"--".*          ;
+"--".*          { /* skip comment */ }
 
-*)
+*) {
   /*ERROR*/
 }
 
 /*Comments can also be enclosed in (* and *) */
-"(*" { BEGIN(COMMENT); }
+"(*" { 
+  ++nested_comments;
+  BEGIN(COMMENT); 
+}
 
 <COMMENT>{
   /* Patterns not followed by actions do nothing */
   
   [^*\n]*
-  [^*\n]*\n ++line_num;
+  [^*\n]*\n  { ++curr_lineno; }
   "*"+[^*/\n]* 
-  "*"+[^*/\n]*\n ++line_num;
+  "*"+[^*/\n]*\n { ++curr_lineno; }
+  "*"+")" {
+    --nested_comments;
+    if (nested_comments == 0)
+      BEGIN(INITIAL);
+  }
   <<EOF>> {
     /*ERROR*/
   }
-  "*"+")" BEGIN(INITIAL);
 }
 
 %%
