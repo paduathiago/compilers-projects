@@ -49,7 +49,7 @@ extern YYSTYPE cool_yylval;
 /*
  *  Add Your own definitions here
  */
-%x STR COMMENT TREAT_STR_ERROR
+%x STR COMMENT TREAT_STR_ERROR DASH_COMMENT
 
 %}
 
@@ -191,7 +191,15 @@ TYPEID     [A-Z][a-zA-Z0-9_]*
 }
 
 /* Comments begin with -- and extend to the end of the line */
-"--".*          /* skip comment */
+"--" { BEGIN(DASH_COMMENT); }
+
+<DASH_COMMENT>{
+	\n {
+    curr_lineno++;
+    BEGIN(INITIAL);
+  }
+  .*	
+}
 
 *) {
   cool_yylval.error_msg = "Unmatched *)";
@@ -242,6 +250,7 @@ TYPEID     [A-Z][a-zA-Z0-9_]*
 }
 
 %%
+
 void read_char(char ch)
 {
   if (string_buf_ptr - string_buf >= MAX_STR_CONST) {
