@@ -133,7 +133,7 @@ TYPEID     [A-Z][a-zA-Z0-9_]*
   /*  STRINGS */
 \" {string_buf_ptr = string_buf; BEGIN(STR);}
 
-<STR> {
+<STR>{
   \" {
     *string_buf_ptr = '\0';
     cool_yylval.symbol = idtable.add_string(string_buf);
