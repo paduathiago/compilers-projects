@@ -56,7 +56,7 @@ int nested_comments = 0;
 
 void read_char();
 
-SINGLE_TOKENS [{}():;@,+-*/=<>]
+SINGLE_TOKENS ["{"|"}"|"("|")"|":"|";"|"@"|","|"+"|"-"|"*"|"/"|"="|"<"|">"]
 
 /* The multiple-character operators. */
 DARROW     =>
