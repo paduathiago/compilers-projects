@@ -49,7 +49,6 @@ extern YYSTYPE cool_yylval;
 /*
  *  Add Your own definitions here
  */
-%x STR COMMENT TREAT_STR_ERROR DASH_COMMENT
 
 %}
 
@@ -67,6 +66,8 @@ LE         <=
 DIGIT      [0-9]
 OBJID      [a-z][a-zA-Z0-9_]*
 TYPEID     [A-Z][a-zA-Z0-9_]*
+
+%x STR COMMENT TREAT_STR_ERROR DASH_COMMENT
 
 %%
 
@@ -126,7 +127,6 @@ TYPEID     [A-Z][a-zA-Z0-9_]*
 [nN][eE][wW]	                    { return (NEW); }
 [oO][fF]	                        { return (OF); }
 [nN][oO][tT]	                    { return (NOT); }
-
 
 /* STRINGS */
 \"{
