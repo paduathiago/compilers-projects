@@ -150,7 +150,9 @@ TYPEID     [A-Z][a-zA-Z0-9_]*
   }
 
   \0 {
-    /*ERROR*/
+    cool_yylval.error_msg = "Null character in string";
+    BEGIN(TREAT_STR_ERROR);
+    return(ERROR);
   }
 
   \n {
@@ -215,7 +217,9 @@ TYPEID     [A-Z][a-zA-Z0-9_]*
       BEGIN(INITIAL);
   }
   <<EOF>> {
-    /*ERROR*/
+    cool_yylval.error_msg = "EOF in comment";
+    BEGIN(INITIAL);
+    return (ERROR);
   }
 }
 
@@ -233,7 +237,7 @@ TYPEID     [A-Z][a-zA-Z0-9_]*
 }
 
 . {
-  cool_yylval.error_msg = "Illegal character: %s", yytext;
+  cool_yylval.error_msg = "%s", yytext;
   return (ERROR);
 }
 
