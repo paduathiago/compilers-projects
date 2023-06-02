@@ -49,12 +49,11 @@ extern YYSTYPE cool_yylval;
 /*
  *  Add Your own definitions here
  */
+int nested_comments = 0;
+int long_str_error();
+void read_char(char ch);
 
 %}
-
-int nested_comments = 0;
-
-void read_char();
 
 SINGLE_TOKENS ["{"|"}"|"("|")"|":"|";"|"@"|","|"+"|"-"|"*"|"/"|"="|"<"|">"]
 
@@ -228,7 +227,7 @@ TYPEID     [A-Z][a-zA-Z0-9_]*
   }
 }
 
-<TREAT_STR_ERROR> {
+<TREAT_STR_ERROR>{
   \n {
     curr_lineno++;
     BEGIN(INITIAL);
@@ -248,12 +247,17 @@ TYPEID     [A-Z][a-zA-Z0-9_]*
 
 %%
 
+int long_str_error()
+{
+  cool_yylval.error_msg = "String constant too long";
+  BEGIN(TREAT_STR_ERROR);
+  return (ERROR);
+}
+
 void read_char(char ch)
 {
   if (string_buf_ptr - string_buf >= MAX_STR_CONST) {
-    cool_yylval.error_msg = "String constant too long";
-    BEGIN(TREAT_STR_ERROR);
-    return (ERROR);
+    long_str_error();
   }
   *string_buf_ptr++ = ch;
 }
