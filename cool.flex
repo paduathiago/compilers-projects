@@ -55,7 +55,7 @@ void read_char(char ch);
 
 %}
 
-SINGLE_TOKENS ["{"|"}"|"("|")"|":"|";"|"@"|","|"+"|"-"|"*"|"/"|"="|"<"|">"]
+SINGLE_TOKENS ["{"|"}"|"("|")"|":"|";"|"@"|","|"."|"+"|"-"|"*"|"/"|"="|"<"|">"]
 
 /* 
  *  The multiple-character operators. 
@@ -83,16 +83,6 @@ TYPEID     [A-Z][a-zA-Z0-9_]*
 {DIGIT}+ {
   cool_yylval.symbol = idtable.add_string(yytext);
   return (INT_CONST);
-}
-
-{TYPEID} {
-  cool_yylval.symbol = idtable.add_string(yytext);
-  return (TYPEID);
-}
-
-{OBJID} {
-  cool_yylval.symbol = idtable.add_string(yytext);
-  return (OBJECTID);
 }
 
 {SINGLE_TOKENS} { return int(yytext[0]); }
@@ -128,6 +118,16 @@ TYPEID     [A-Z][a-zA-Z0-9_]*
 [nN][eE][wW]	                    { return (NEW); }
 [oO][fF]	                        { return (OF); }
 [nN][oO][tT]	                    { return (NOT); }
+
+{TYPEID} {
+  cool_yylval.symbol = idtable.add_string(yytext);
+  return (TYPEID);
+}
+
+{OBJID} {
+  cool_yylval.symbol = idtable.add_string(yytext);
+  return (OBJECTID);
+}
 
   /*  STRINGS */
 \" {string_buf_ptr = string_buf; BEGIN(STR);}
@@ -213,8 +213,8 @@ TYPEID     [A-Z][a-zA-Z0-9_]*
   
   [^*\n]*
   [^*\n]*\n  { ++curr_lineno; }
-  "*"+[^*/\n]* 
-  "*"+[^*/\n]*\n { ++curr_lineno; }
+  "*"+[^*)\n]* 
+  "*"+[^*)\n]*\n { ++curr_lineno; }
   "*"+")" {
     --nested_comments;
     if (nested_comments == 0)
