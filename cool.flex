@@ -58,7 +58,9 @@ void read_char();
 
 SINGLE_TOKENS [{}():;@,+-*/=<>]
 
-/* The multiple-character operators. */
+/* 
+ *  The multiple-character operators. 
+ */
 DARROW     =>
 ASSIGN     <-
 LE         <=   
@@ -71,7 +73,7 @@ TYPEID     [A-Z][a-zA-Z0-9_]*
 
 %%
 
-[ \t\r\n\f\v]+  ;  /*skip whitespace*/
+[ \t\r\n\f\v]+ {/*skip whitespace*/}
 
 \n          { curr_lineno++; }
 
@@ -94,10 +96,10 @@ TYPEID     [A-Z][a-zA-Z0-9_]*
   return (OBJECTID);
 }
 
-/*single-character tokens */
 {SINGLE_TOKENS} { return (yytext[0]); }
 
-/*  The following are reserved words
+/*  
+  * The following are reserved words
   * Keywords are case-insensitive except for the values true and false,
   * which must begin with a lower-case letter.
 */
@@ -128,7 +130,9 @@ TYPEID     [A-Z][a-zA-Z0-9_]*
 [oO][fF]	                        { return (OF); }
 [nN][oO][tT]	                    { return (NOT); }
 
-/* STRINGS */
+/*
+ *  STRINGS
+ */
 \"{
   string_buf_ptr = string_buf;
   BEGIN(STR);
@@ -181,7 +185,10 @@ TYPEID     [A-Z][a-zA-Z0-9_]*
     read_char(yytext[1]);
   }
 
-  [^\\\n\"]+ {  /* Reads all other characters */
+/*
+ *  Reads all other characters 
+ */
+  [^\\\n\"]+ {  
     char *yptr = yytext;
     while (*yptr){
       read_char(*yptr);
@@ -190,7 +197,9 @@ TYPEID     [A-Z][a-zA-Z0-9_]*
   }  
 }
 
-/* Comments begin with -- and extend to the end of the line */
+/* 
+ *  Comments begin with -- and extend to the end of the line
+ */
 "--" { BEGIN(DASH_COMMENT); }
 
 <DASH_COMMENT>{
@@ -201,7 +210,7 @@ TYPEID     [A-Z][a-zA-Z0-9_]*
   .*	
 }
 
-*) {
+"*)" {
   cool_yylval.error_msg = "Unmatched *)";
   return (ERROR);
 }
