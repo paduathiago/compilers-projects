@@ -98,11 +98,11 @@ TYPEID     [A-Z][a-zA-Z0-9_]*
 
 {SINGLE_TOKENS} { return (yytext[0]); }
 
-/*  
-  * The following are reserved words
-  * Keywords are case-insensitive except for the values true and false,
-  * which must begin with a lower-case letter.
-*/
+ /*  
+  *  The following are reserved words
+  *  Keywords are case-insensitive except for the values true and false,
+  *  which must begin with a lower-case letter.
+  */
 
 "t[rR][uU][eE]" {
   cool_yylval.boolean = true;
@@ -130,16 +130,10 @@ TYPEID     [A-Z][a-zA-Z0-9_]*
 [oO][fF]	                        { return (OF); }
 [nN][oO][tT]	                    { return (NOT); }
 
-/*
- *  STRINGS
- */
-\"{
-  string_buf_ptr = string_buf;
-  BEGIN(STR);
-}
+  /*  STRINGS */
+\" {string_buf_ptr = string_buf; BEGIN(STR);}
 
 <STR> {
-  
   \" {
     *string_buf_ptr = '\0';
     cool_yylval.symbol = idtable.add_string(string_buf);
@@ -181,13 +175,9 @@ TYPEID     [A-Z][a-zA-Z0-9_]*
   \\b {read_char('\b');}
   \\f {read_char('\f');}
 
-  \\(.|\n){
-    read_char(yytext[1]);
-  }
+  \\(.|\n) { read_char(yytext[1]); }
 
-/*
- *  Reads all other characters 
- */
+  /* Reads all other characters */
   [^\\\n\"]+ {  
     char *yptr = yytext;
     while (*yptr){
@@ -197,9 +187,7 @@ TYPEID     [A-Z][a-zA-Z0-9_]*
   }  
 }
 
-/* 
- *  Comments begin with -- and extend to the end of the line
- */
+ /* Comments begin with -- and extend to the end of the line */
 "--" { BEGIN(DASH_COMMENT); }
 
 <DASH_COMMENT>{
@@ -215,7 +203,7 @@ TYPEID     [A-Z][a-zA-Z0-9_]*
   return (ERROR);
 }
 
-/*Comments can also be enclosed in (* and *) */
+ /*Comments can also be enclosed in (* and *) */
 "(*" { 
   ++nested_comments;
   BEGIN(COMMENT); 
