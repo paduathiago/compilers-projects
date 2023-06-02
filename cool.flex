@@ -55,7 +55,7 @@ void read_char(char ch);
 
 %}
 
-SINGLE_TOKENS ["{"|"}"|"("|")"|":"|";"|"@"|","|"."|"+"|"-"|"*"|"/"|"="|"<"|">"]
+SINGLE_TOKENS ["{"|"}"|"("|")"|":"|";"|"@"|","|"."|"+"|"\-"|"*"|"/"|"="|"<"|">"]
 
 /* 
  *  The multiple-character operators. 
@@ -68,11 +68,14 @@ DIGIT      [0-9]
 OBJID      [a-z][a-zA-Z0-9_]*
 TYPEID     [A-Z][a-zA-Z0-9_]*
 
-%x STR COMMENT TREAT_STR_ERROR DASH_COMMENT
+%x STR   
+%x COMMENT
+%x TREAT_STR_ERROR
+%x DASH_COMMENT
 
 %%
 
-[ \t\r\n\f\v]+ {/*skip whitespace*/}
+[ \t\r\f\v]+ {/*skip whitespace*/}
 
 \n          { curr_lineno++; }
 
