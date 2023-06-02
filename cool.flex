@@ -95,7 +95,7 @@ TYPEID     [A-Z][a-zA-Z0-9_]*
   return (OBJECTID);
 }
 
-{SINGLE_TOKENS} { return (yytext[0]); }
+{SINGLE_TOKENS} { return int(yytext[0]); }
 
  /*  
   *  The following are reserved words
@@ -121,7 +121,7 @@ TYPEID     [A-Z][a-zA-Z0-9_]*
 [lL][eE][tT]                      { return (LET); }
 [lL][oO][oO][pP]	                { return (LOOP); }
 [pP][oO][oO][lL]	                { return (POOL); }
-[tT][hH][eE][nN]	                { return {THEN}; }
+[tT][hH][eE][nN]	                { return (THEN); }
 [wW][hH][iI][lL][eE]	            { return (WHILE); }
 [cC][aA][sS][eE]	                { return (CASE); }
 [eE][sS][aA][cC]	                { return (ESAC); }
@@ -241,7 +241,7 @@ TYPEID     [A-Z][a-zA-Z0-9_]*
 }
 
 . {
-  cool_yylval.error_msg = "%s", yytext;
+  cool_yylval.error_msg = yytext;
   return (ERROR);
 }
 
