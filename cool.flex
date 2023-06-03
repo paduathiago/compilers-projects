@@ -55,7 +55,9 @@ void read_char(char ch);
 
 %}
 
-SINGLE_TOKENS ["{"|"}"|"("|")"|":"|";"|"@"|","|"."|"+"|"\-"|"*"|"/"|"="|"<"|">"]
+SINGLE_TOKENS ["{"|"}"|"("|")"|":"|";"|"@"|","|"."|"+"|"\-"|"*"|"/"|"="|"<"]
+
+QUOTES \"[^\0]
 
 /* 
  *  The multiple-character operators. 
@@ -133,10 +135,10 @@ TYPEID     [A-Z][a-zA-Z0-9_]*
 }
 
   /*  STRINGS */
-\" {string_buf_ptr = string_buf; BEGIN(STR);}
+{QUOTES} {string_buf_ptr = string_buf; BEGIN(STR);}
 
 <STR>{
-  \" {
+  {QUOTES} {
     *string_buf_ptr = '\0';
     cool_yylval.symbol = idtable.add_string(string_buf);
     BEGIN(INITIAL);
@@ -238,7 +240,7 @@ TYPEID     [A-Z][a-zA-Z0-9_]*
 
   \\\"
 
-  \" { BEGIN(INITIAL); }
+  {QUOTES} { BEGIN(INITIAL); }
   
   .+ 
 }
