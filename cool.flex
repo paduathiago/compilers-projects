@@ -55,9 +55,9 @@ void read_char(char ch);
 
 %}
 
-SINGLE_TOKENS ["{"|"}"|"("|")"|":"|";"|"@"|","|"."|"+"|"\-"|"*"|"/"|"="|"<"]
+SINGLE_TOKENS [{|}|(|)|:|;|@|,|.|+|\-|*|/|=|<]
 
-QUOTES \"[^\0]
+QUOTES \"
 
 /* 
  *  The multiple-character operators. 
