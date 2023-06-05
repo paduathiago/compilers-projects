@@ -124,6 +124,16 @@ After the definitions, we have the rules, in which we establish the regular expr
 One key aspect for the correct behavior of the scanner and readability is defining start conditions scopes. This is done by using the %x directive. In cool.flex, we use it to change the lexical analyzer's context when we find a certain pattern. We will take the STR scope as an example. Every time double quotes are found, the context of the lexical analyzer is changed to STR: BEGIN(STR) is called and the scanner will start recognizing tokens using the rules defined in '<STR> {}'
 This means that the rules defined in the STR scope will be used to recognize tokens until we change the context again -  the next time unescaped " are found - when BEGIN(INITIAL) is called to retake the default condition. This way, we can recognize strings, comments and treat some errors correctly.
 
+Lexical Erros
+It is the scanner's responsability to deal with lexical errors. In cool.flex, we treat the following errors:
+	- Unterminated string - when the scanner finds a string that is not terminated by a double quote
+	- EOF in comment - when the scanner finds a comment that is not terminated by a *)
+	- Illegal character - when the scanner finds a character that is not recognized by any of the rules, it return the character.
+	- NULL character - when the scanner finds a null character in a string
+	- Long string - when the scanner finds a string that is longer than 1024 characters
+	in the previous two errors, the scanner switches the context to TREAT_STR_ERROR. This start condition is used to discard the rest of the string and resume the normal behavior of the scanner safely.
+In all cases, the lexical analyzer returns the token ERROR, which is used by the parser to treat the error. The scanner also manages the current line number of execution, which is used by the parser to print the error message.
+
 At last, we specify the user code. This part represents auxiliary functions that are executed by the actions of the rules involving strings. We have the following functions:
  - void read_char(char ch) - reads a character, appends it to the string buffer and checks if the string is too long. If it is, it calls long_str_error()
  - int long_str_error() - adds the apropriate text to cool_yylval.error_msg, changes the scope to TREAT_STR_ERROR and returns the ERROR token.
