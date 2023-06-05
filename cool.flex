@@ -147,7 +147,7 @@ TYPEID     [A-Z][a-zA-Z0-9_]*
     return (ERROR);
   }
 
-  \0 {
+  (\0|\\\0) {
     cool_yylval.error_msg = "Null character in string";
     BEGIN(TREAT_STR_ERROR);
     return(ERROR);
