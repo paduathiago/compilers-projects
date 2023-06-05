@@ -52,7 +52,7 @@ void read_char(char ch);
 
 %}
 
-SINGLE_TOKENS [{|}|(|)|:|;|@|,|.|+|\-|*|/|=|<]
+SINGLE_TOKENS [{|}|(|)|:|;|@|,|.|+|\-|*|/|=|<|~]
 QUOTES \"
 
 /* 
@@ -137,13 +137,13 @@ TYPEID     [A-Z][a-zA-Z0-9_]*
   {QUOTES} {
     *string_buf_ptr = '\0';
     cool_yylval.symbol = idtable.add_string(string_buf);
-    BEGIN(0);
+    BEGIN(INITIAL);
     return (STR_CONST);
   }
 
   <<EOF>> {
     strcpy(cool_yylval.error_msg, "EOF in string constant");
-    BEGIN(0);
+    BEGIN(INITIAL);
     return (ERROR);
   }
 
@@ -156,7 +156,7 @@ TYPEID     [A-Z][a-zA-Z0-9_]*
   \n {
     strcpy(cool_yylval.error_msg, "Unterminated string constant");
     curr_lineno++;
-    BEGIN(0);
+    BEGIN(INITIAL);
     return (ERROR);
   }
 
@@ -193,7 +193,7 @@ TYPEID     [A-Z][a-zA-Z0-9_]*
 <DASH_COMMENT>{
 	\n {
     curr_lineno++;
-    BEGIN(0);
+    BEGIN(INITIAL);
   }
   .*	
 }
@@ -219,11 +219,11 @@ TYPEID     [A-Z][a-zA-Z0-9_]*
   "*"+")" {
     --nested_comments;
     if (nested_comments == 0)
-      BEGIN(0);
+      BEGIN(INITIAL);
   }
   <<EOF>> {
     strcpy(cool_yylval.error_msg, "EOF in comment");
-    BEGIN(0);
+    BEGIN(INITIAL);
     return (ERROR);
   }
 }
@@ -231,12 +231,12 @@ TYPEID     [A-Z][a-zA-Z0-9_]*
 <TREAT_STR_ERROR>{
   \n {
     curr_lineno++;
-    BEGIN(0);
+    BEGIN(INITIAL);
   }
 
   \\\"
 
-  {QUOTES} { BEGIN(0); }
+  {QUOTES} { BEGIN(INITIAL); }
   
   .+ 
 }
