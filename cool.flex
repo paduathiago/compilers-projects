@@ -46,9 +46,6 @@ extern int verbose_flag;
 
 extern YYSTYPE cool_yylval;
 
-/*
- *  Add Your own definitions here
- */
 int nested_comments = 0;
 int long_str_error();
 void read_char(char ch);
@@ -56,7 +53,6 @@ void read_char(char ch);
 %}
 
 SINGLE_TOKENS [{|}|(|)|:|;|@|,|.|+|\-|*|/|=|<]
-
 QUOTES \"
 
 /* 
