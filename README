@@ -112,4 +112,12 @@ Instructions
 
 Write-up for PA2
 ----------------
+The main goal of this assignment is to write a lexical analyzer for COOL. For that matter, we use flex, which is a tool for generating scanners. The scanner reads an input stream and produces a stream of tokens. It is implemented in the file cool.flex and is invoked by the function yylex(), defined in the file cool-lexer.cc.
+
+It is possible to divide the task of writing a lexical analyzer into two parts: the specification of the lexical structure of the language and the implementation of the scanner. The first part is done in cool.flex, while the second part is done by flex. The specification of the lexical structure of the language is done by writing regular expressions that describe the tokens of the language. The implementation of the scanner is done by writing actions that are executed when a token is recognized.
+
+In cool.flex, we tried as much as possible to make the code clean and easy to understand. We use definitions to make the task of working with regular expressions easier and make the code more readable. They are segregated into single-character, multiple-character digits and ID tokens.
+
+After the definitions, we have the rules, in which we define the regular expressions and the actions to be executed when a token is recognized. The most important aspect here is to make sure that the regular expressions and definitions are ordered correctly. This impacts directly on the behavior of the scanner, since some expressions can be recognized by multiple patterns. In cool.flex, we ordered the rules in the following way:
+ - More specif patterns always come first e.g. the keyword 'class' could be identified as an ID, but it is more specific than the ID pattern, so the regex that recognizes 'class' and returns the 'CLASS' token comes first.
 
