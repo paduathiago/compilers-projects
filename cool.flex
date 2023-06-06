@@ -52,7 +52,7 @@ void read_char(char ch);
 
 %}
 
-SINGLE_TOKENS [{|}|(|)|:|;|@|,|.|+|\-|*|/|=|<]
+SINGLE_TOKENS [{|}|(|)|:|;|@|,|.|+|\-|*|/|=|<|~]
 QUOTES \"
 
 /* 
@@ -95,11 +95,11 @@ TYPEID     [A-Z][a-zA-Z0-9_]*
   */
 
 "t[rR][uU][eE]" {
-  cool_yylval.boolean = true;
+  cool_yylval.boolean = 1;
   return (BOOL_CONST);
 }
 "f[aA][lL][sS][eE]" {
-  cool_yylval.boolean = false;
+  cool_yylval.boolean = 0;
   return (BOOL_CONST);
 }
 [cC][lL][aA][sS][sS]	            { return (CLASS); }
@@ -136,25 +136,25 @@ TYPEID     [A-Z][a-zA-Z0-9_]*
 <STR>{
   {QUOTES} {
     *string_buf_ptr = '\0';
-    cool_yylval.symbol = idtable.add_string(string_buf);
+    cool_yylval.symbol = stringtable.add_string(string_buf);
     BEGIN(INITIAL);
     return (STR_CONST);
   }
 
   <<EOF>> {
-    cool_yylval.error_msg = "EOF in string constant";
+    strcpy(cool_yylval.error_msg, "EOF in string constant");
     BEGIN(INITIAL);
     return (ERROR);
   }
 
-  \0 {
-    cool_yylval.error_msg = "Null character in string";
+  (\0|\\\0) {
+    strcpy(cool_yylval.error_msg, "Null character in string");
     BEGIN(TREAT_STR_ERROR);
     return(ERROR);
   }
 
   \n {
-    cool_yylval.error_msg = "Unterminated string constant";
+    strcpy(cool_yylval.error_msg, "Unterminated string constant");
     curr_lineno++;
     BEGIN(INITIAL);
     return (ERROR);
@@ -199,7 +199,7 @@ TYPEID     [A-Z][a-zA-Z0-9_]*
 }
 
 "*)" {
-  cool_yylval.error_msg = "Unmatched *)";
+  strcpy(cool_yylval.error_msg, "Unmatched *)");
   return (ERROR);
 }
 
@@ -222,7 +222,7 @@ TYPEID     [A-Z][a-zA-Z0-9_]*
       BEGIN(INITIAL);
   }
   <<EOF>> {
-    cool_yylval.error_msg = "EOF in comment";
+    strcpy(cool_yylval.error_msg, "EOF in comment");
     BEGIN(INITIAL);
     return (ERROR);
   }
@@ -242,7 +242,7 @@ TYPEID     [A-Z][a-zA-Z0-9_]*
 }
 
 . {
-  cool_yylval.error_msg = yytext;
+  strcpy(cool_yylval.error_msg, yytext);
   return (ERROR);
 }
 
@@ -250,7 +250,7 @@ TYPEID     [A-Z][a-zA-Z0-9_]*
 
 int long_str_error()
 {
-  cool_yylval.error_msg = "String constant too long";
+  strcpy(cool_yylval.error_msg, "String constant too long");
   BEGIN(TREAT_STR_ERROR);
   return (ERROR);
 }
