@@ -53,10 +53,11 @@ class CellularAutomaton inherits IO {
         then
             "X"
         else
-            '.'
+            "."
         fi
     };
    
+   -- Cellular Networks whose stats are altered in time with rules that depend on the previous state are Cellular Automata.
     evolve() : SELF_TYPE {
         (let position : Int in
         (let num : Int <- num_cells[] in
@@ -75,6 +76,8 @@ class CellularAutomaton inherits IO {
     };
 };
 
+(* this is the Main class.  (*It creates a CellularAutomaton and
+   evolves it 20 times*) it prints the results each time *)
 class Main {
     cells : CellularAutomaton;
    
@@ -88,9 +91,9 @@ class Main {
                         cells.evolve();
                         cells.print();
                         countdown <- countdown - 1;
-                    
+                    }
                 pool
-            );  (* end let countdown
+            );  (* end let countdown *)
             self;
         }
     };
