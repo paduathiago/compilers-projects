@@ -212,6 +212,7 @@ TYPEID     [A-Z][a-zA-Z0-9_]*
 <COMMENT>{
   /* Patterns not followed by actions do nothing */
   
+  "(*" { ++nested_comments; }
   [^*\n]*
   [^*\n]*\n  { ++curr_lineno; }
   "*"+[^*)\n]* 
