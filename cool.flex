@@ -205,7 +205,7 @@ TYPEID     [A-Z][a-zA-Z0-9_]*
 
  /*Comments can also be enclosed in (* and *) */
 "(*" { 
-  ++nested_comments;
+  ++nested_comments;;
   BEGIN(COMMENT); 
 }
 
@@ -213,14 +213,15 @@ TYPEID     [A-Z][a-zA-Z0-9_]*
   /* Patterns not followed by actions do nothing */
   
   "(*" { ++nested_comments; }
-  [^*\n]*
-  [^*\n]*\n  { ++curr_lineno; }
+  [^*\n(*]*
+  [^*\n(*]*\n  { ++curr_lineno; }
   "*"+[^*)\n]* 
   "*"+[^*)\n]*\n { ++curr_lineno; }
   "*"+")" {
-    --nested_comments;
-    if (nested_comments == 0)
+    nested_comments--;
+    if (nested_comments == 0){
       BEGIN(INITIAL);
+    }
   }
   <<EOF>> {
     strcpy(cool_yylval.error_msg, "EOF in comment");
