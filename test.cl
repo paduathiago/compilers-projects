@@ -60,7 +60,7 @@ class CellularAutomaton inherits IO {
    -- Cellular Networks whose stats are altered in time with rules that depend on the previous state are Cellular Automata.
     evolve() : SELF_TYPE {
         (let position : Int in
-        (let num : Int <- num_cells[] in
+        (let num : Int <- num_cells() in
         (let temp : String in
             {
                 while position < num loop
@@ -76,8 +76,8 @@ class CellularAutomaton inherits IO {
     };
 };
 
-(* this is the Main class.  (*It creates a CellularAutomaton and
-   evolves it 20 times*) it prints the results each time *)
+(* this is the Main class.  (* It creates a CellularAutomaton and
+   evolves it 20 times *) it prints the results each time *)
 class Main {
     cells : CellularAutomaton;
    
