@@ -137,7 +137,6 @@ The lexical analyzer returns the token ERROR, which is used by the parser to tre
 Testing the lexical analyzer
 To test the lexical analyzer, we use the file test.cl. It contains a set of tests that cover all the tokens of the language. We also added some tests to cover the errors.
 
-
 At last, we specify the user code. This part represents auxiliary functions that are executed by the actions of the rules involving strings. We have the following functions:
  - void read_char(char ch) - reads a character, appends it to the string buffer and checks if the string is too long. If it is, it calls long_str_error()
  - int long_str_error() - adds the apropriate text to cool_yylval.error_msg, changes the scope to TREAT_STR_ERROR and returns the ERROR token.
