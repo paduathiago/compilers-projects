@@ -167,33 +167,33 @@ TYPEID     [A-Z][a-zA-Z0-9_]*
   */
 
   \\n {
-    if (not  read_char('\n')){
+    if (not read_char('\n')){
       return long_str_error();
     };
   }
   \\t {
-    if (not  read_char('\t')){
+    if (not read_char('\t')){
       return long_str_error();
     }
   }
   \\r {
-    if (not  read_char('\r')){
+    if (not read_char('\r')){
       return long_str_error();
     }
   }
   \\b {
-    if (not  read_char('\b')){
+    if (not read_char('\b')){
       return long_str_error();
     }
   }
   \\f {
-    if (not  read_char('\f')){
+    if (not read_char('\f')){
       return long_str_error();
     }
   }
 
   \\(.|\n) { 
-    if (not  read_char(yytext[1])){
+    if (not read_char(yytext[1])){
       return long_str_error();
     } 
   }
@@ -202,7 +202,7 @@ TYPEID     [A-Z][a-zA-Z0-9_]*
   [^\\\n\"]+ {  
     char *yptr = yytext;
     while (*yptr){
-      if (not  read_char(*yptr)){
+      if (not read_char(*yptr)){
         return long_str_error();
     }
       yptr++;
