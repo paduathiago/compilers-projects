@@ -48,7 +48,7 @@ extern YYSTYPE cool_yylval;
 
 int nested_comments = 0;
 int long_str_error();
-void read_char(char ch);
+bool read_char(char ch);
 
 %}
 
@@ -166,19 +166,45 @@ TYPEID     [A-Z][a-zA-Z0-9_]*
   *  \n \t \b \f, the result is c. 
   */
 
-  \\n {read_char('\n');}
-  \\t {read_char('\t');}
-  \\r {read_char('\r');}
-  \\b {read_char('\b');}
-  \\f {read_char('\f');}
+  \\n {
+    if (not  read_char('\n')){
+      return long_str_error();
+    };
+  }
+  \\t {
+    if (not  read_char('\t')){
+      return long_str_error();
+    }
+  }
+  \\r {
+    if (not  read_char('\r')){
+      return long_str_error();
+    }
+  }
+  \\b {
+    if (not  read_char('\b')){
+      return long_str_error();
+    }
+  }
+  \\f {
+    if (not  read_char('\f')){
+      return long_str_error();
+    }
+  }
 
-  \\(.|\n) { read_char(yytext[1]); }
+  \\(.|\n) { 
+    if (not  read_char(yytext[1])){
+      return long_str_error();
+    } 
+  }
 
   /* Reads all other characters */
   [^\\\n\"]+ {  
     char *yptr = yytext;
     while (*yptr){
-      read_char(*yptr);
+      if (not  read_char(*yptr)){
+        return long_str_error();
+    }
       yptr++;
     }
   }  
@@ -207,7 +233,7 @@ TYPEID     [A-Z][a-zA-Z0-9_]*
 }
 
 <COMMENT>{
-  /* Patterns not followed by actions do nothing */
+  /* Patterns (not  followed by actions do (not hing */
   
   "(*" { ++nested_comments; }
   "("
@@ -255,10 +281,12 @@ int long_str_error()
   return (ERROR);
 }
 
-void read_char(char ch)
+bool read_char(char ch)
 {
   if (string_buf_ptr - string_buf >= MAX_STR_CONST) {
     long_str_error();
+    return 0;
   }
   *string_buf_ptr++ = ch;
+  return 1;
 }
