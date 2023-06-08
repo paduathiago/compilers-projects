@@ -94,11 +94,11 @@ TYPEID     [A-Z][a-zA-Z0-9_]*
   *  which must begin with a lower-case letter.
   */
 
-"t[rR][uU][eE]" {
+"t"[rR][uU][eE] {
   cool_yylval.boolean = 1;
   return (BOOL_CONST);
 }
-"f[aA][lL][sS][eE]" {
+"f"[aA][lL][sS][eE] {
   cool_yylval.boolean = 0;
   return (BOOL_CONST);
 }
@@ -166,10 +166,7 @@ TYPEID     [A-Z][a-zA-Z0-9_]*
   *  \n \t \b \f, the result is c. 
   */
 
-  \\n {
-    curr_lineno++;
-    read_char('\n');
-  }
+  \\n {read_char('\n');}
   \\t {read_char('\t');}
   \\r {read_char('\r');}
   \\b {read_char('\b');}
