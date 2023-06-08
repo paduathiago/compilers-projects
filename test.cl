@@ -2,9 +2,8 @@
    arrays are faked as Strings,
    X's respresent live cells, dots represent dead cells,
    no error checking is done *)
-class CellularAutomaton inherits IO {
+CLass CellularAutomaton INHERITS IO {
     population_map : String;
-   
     init(map : String) : SELF_TYPE {
         {
             population_map <- map;
@@ -78,15 +77,32 @@ class CellularAutomaton inherits IO {
 
 (* this is the Main class.  (* It creates a CellularAutomaton and
    evolves it 20 times *) it prints the results each time *)
-class Main {
+CLASS Main {
     cells : CellularAutomaton;
    
     main() : SELF_TYPE {
         {
             cells <- (new CellularAutomaton).init("         X         ");
-            cells.print();
+            cells.print();       
+            
+            (let bool_test : Bool <- true in
+                (let countdown : Int <- 5 in 
+                    while 0 <= countdown looP
+                    {
+                        bool_test <- nOt bool_test;
+                        IF countdown = 3 then
+                            out_string("true")
+                        ELSE
+                            out_string("false")
+                        FI;
+                        countdown <- countdown - 1;
+                    }
+                pool
+                )
+            );
+            
             (let countdown : Int <- 20 in
-                while 0 <= countdown loop
+                while 0 <= countdown looP
                     {
                         cells.evolve();
                         cells.print();
