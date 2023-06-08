@@ -333,73 +333,57 @@
 #92 NOT
 #92 OBJECTID bool_test
 #92 ';'
-#93 IF
 #93 OBJECTID countdown
-#93 '='
-#93 INT_CONST 3
-#93 THEN
-#94 OBJECTID out_string
-#94 '('
-#94 STR_CONST "true"
-#94 ')'
-#95 ELSE
-#96 OBJECTID out_string
-#96 '('
-#96 STR_CONST "false"
+#93 ASSIGN
+#93 OBJECTID countdown
+#93 '-'
+#93 INT_CONST 1
+#93 ';'
+#94 '}'
+#95 POOL
 #96 ')'
-#97 FI
+#97 ')'
 #97 ';'
-#98 OBJECTID countdown
-#98 ASSIGN
-#98 OBJECTID countdown
-#98 '-'
-#98 INT_CONST 1
-#98 ';'
-#99 '}'
-#100 POOL
-#101 ')'
+#99 '('
+#99 LET
+#99 OBJECTID countdown
+#99 ':'
+#99 TYPEID Int
+#99 ASSIGN
+#99 INT_CONST 20
+#99 IN
+#100 WHILE
+#100 INT_CONST 0
+#100 LE
+#100 OBJECTID countdown
+#100 LOOP
+#101 '{'
+#102 OBJECTID cells
+#102 '.'
+#102 OBJECTID evolve
+#102 '('
 #102 ')'
 #102 ';'
-#104 '('
-#104 LET
+#103 OBJECTID cells
+#103 '.'
+#103 OBJECTID print
+#103 '('
+#103 ')'
+#103 ';'
 #104 OBJECTID countdown
-#104 ':'
-#104 TYPEID Int
 #104 ASSIGN
-#104 INT_CONST 20
-#104 IN
-#105 WHILE
-#105 INT_CONST 0
-#105 LE
-#105 OBJECTID countdown
-#105 LOOP
-#106 '{'
-#107 OBJECTID cells
-#107 '.'
-#107 OBJECTID evolve
-#107 '('
+#104 OBJECTID countdown
+#104 '-'
+#104 INT_CONST 1
+#104 ';'
+#105 '}'
+#106 POOL
 #107 ')'
 #107 ';'
-#108 OBJECTID cells
-#108 '.'
-#108 OBJECTID print
-#108 '('
-#108 ')'
+#108 OBJECTID self
 #108 ';'
-#109 OBJECTID countdown
-#109 ASSIGN
-#109 OBJECTID countdown
-#109 '-'
-#109 INT_CONST 1
-#109 ';'
+#109 '}'
 #110 '}'
-#111 POOL
-#112 ')'
-#112 ';'
-#113 OBJECTID self
-#113 ';'
-#114 '}'
-#115 '}'
-#115 ';'
-#116 '}'
-#116 ';'
+#110 ';'
+#111 '}'
+#111 ';'
