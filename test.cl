@@ -90,17 +90,12 @@ CLASS Main {
                     while 0 <= countdown looP
                     {
                         bool_test <- nOt bool_test;
-                        IF countdown = 3 then
-                            out_string("true")
-                        ELSE
-                            out_string("false")
-                        FI;
                         countdown <- countdown - 1;
                     }
-                pool
+                    pool
                 )
             );
-            
+                  
             (let countdown : Int <- 20 in
                 while 0 <= countdown looP
                     {
