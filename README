@@ -135,8 +135,11 @@ in the previous two errors, the scanner switches the context to TREAT_STR_ERROR.
 The lexical analyzer returns the token ERROR, which is used by the parser to treat the error, in all of the listed above cases. The scanner also manages the current line number of execution, used by the parser to print the error message.
 
 Testing the lexical analyzer
-To test the lexical analyzer, we use the file test.cl. It contains a set of tests that cover all the tokens of the language. We also added some tests to cover the errors.
+To test the lexical analyzer, we use the file test.cl and all the other cool programs inside /usr/coolc/examples. They contain a set of tests that cover all the categories of tokens present in the language. We also made sure to add some tests to cover the errors, which we removed afterwars so the program test.cl would run correctly.
+Tests have been added to include boolean, integer and string constants, as well as comments - two dashes “--” or enclosing text in (∗ . . . ∗) .
+We assigned and altered values for the above said data types and made sure that the lexical analyzer would recognize them correctly.
+
 
 At last, we specify the user code. This part represents auxiliary functions that are executed by the actions of the rules involving strings. We have the following functions:
- - void read_char(char ch) - reads a character, appends it to the string buffer and checks if the string is too long. If it is, it calls long_str_error()
+ - bool read_char(char ch) - reads a character, appends it to the string buffer and checks if the string is too long. This function returns false - indicating error - if the string is too long and true, otherwise. Everytime the scanner appends a character to the string buffer, it checks if the string is too long. If it is, it calls long_str_error().
  - int long_str_error() - adds the apropriate text to cool_yylval.error_msg, changes the scope to TREAT_STR_ERROR and returns the ERROR token.
